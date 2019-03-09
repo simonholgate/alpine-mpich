@@ -32,6 +32,10 @@ PROJECT_NAME="mpi"
 NETWORK_NAME="mpi-network"
 NETWORK_SUBNET="10.0.9.0/24"
 SSH_PORT="2222"
+NFS_HOST_ADDR="10.193.200.114"
+NFS_HOST_VOL_NAME="vol1"
+NFS_HOST_VOL_PATH="/vol1"
+NFS_MNT_PATH="/mnt/data"
 
 # Include config variables if the file exists
 # shellcheck disable=SC1091
@@ -166,14 +170,16 @@ up_master ()
         --network %s \\
         --publish %s:22 \\
         --user root \\
-        --mount 'type=volume,src=vol1,volume-driver=local,dst=/mnt/data/,\\
-volume-opt=type=nfs,volume-opt=device=:/vol1,\\
-volume-opt=o=addr=10.193.200.114' \\
+        --mount 'type=volume,src=%s,volume-driver=local,dst=%s,\\
+volume-opt=type=nfs,volume-opt=device=:%s,\\
+volume-opt=o=addr=%s' \\
         %s mpi_bootstrap \\
             mpi_master_service_name=%s \\
             mpi_worker_service_name=%s \\
             role=master\\n" \
-    "${MPI_MASTER_SERVICE_NAME}" "${NETWORK_NAME}" "${SSH_PORT}" "${IMAGE_TAG}" \
+    "${MPI_MASTER_SERVICE_NAME}" "${NETWORK_NAME}" "${SSH_PORT}" \
+    "${NFS_HOST_VOL_NAME}" "${NFS_MNT_PATH}" "${NFS_HOST_VOL_PATH}" \
+    "${NFS_HOST_ADDR}" "${IMAGE_TAG}" \
     "${MPI_MASTER_SERVICE_NAME}" "${MPI_WORKER_SERVICE_NAME}"
 
     printf "\\n"
@@ -186,7 +192,10 @@ volume-opt=o=addr=10.193.200.114' \\
         --network ${NETWORK_NAME}              \
         --publish ${SSH_PORT}:22               \
         --user root                            \
-        --mount 'type=volume,src=vol1,volume-driver=local,dst=/mnt/data/,volume-opt=type=nfs,volume-opt=device=:/vol1,volume-opt=o=addr=10.193.200.114' \
+        --mount 'type=volume,src='"${NFS_HOST_VOL_NAME}"\
+',volume-driver=local,dst='"${NFS_MNT_PATH}"',volume-opt=type=nfs,'\
+'volume-opt=device=:'"${NFS_HOST_VOL_PATH}"\
+',volume-opt=o=addr='"${NFS_HOST_ADDR}" \
         "${IMAGE_TAG}" mpi_bootstrap             \
                     mpi_master_service_name=${MPI_MASTER_SERVICE_NAME} \
                     mpi_worker_service_name=${MPI_WORKER_SERVICE_NAME} \
@@ -208,14 +217,17 @@ up_workers ()
         --replicas %s \\
         --network %s \\
         --user root \\
-        --mount 'type=volume,src=vol1,volume-driver=local,dst=/mnt/data/,\\
+        --mount 'type=volume,src=%s,volume-driver=local,dst=%s,\\
+volume-opt=type=nfs,volume-opt=device=:%s,\\
+volume-opt=o=addr=%s' \\
         %s mpi_bootstrap \\
             mpi_master_service_name=%s \\
             mpi_worker_service_name=%s \\
-            role=worker\\n" \
-    "${MPI_WORKER_SERVICE_NAME}" "${NUM_WORKER}" "${NETWORK_NAME}" "${IMAGE_TAG}" \
+            role=master\\n" \
+    "${MPI_MASTER_SERVICE_NAME}" "${NETWORK_NAME}" "${SSH_PORT}" \
+    "${NFS_HOST_VOL_NAME}" "${NFS_MNT_PATH}" "${NFS_HOST_VOL_PATH}" \
+    "${NFS_HOST_ADDR}" "${IMAGE_TAG}" \
     "${MPI_MASTER_SERVICE_NAME}" "${MPI_WORKER_SERVICE_NAME}"
-
     printf "\\n"
 
 # Mount NFS example from:
@@ -226,7 +238,10 @@ up_workers ()
         --replicas ${NUM_WORKER}               \
         --network ${NETWORK_NAME}              \
         --user root                            \
-        --mount 'type=volume,src=vol1,volume-driver=local,dst=/mnt/data/,volume-opt=type=nfs,volume-opt=device=:/vol1,volume-opt=o=addr=10.193.200.114' \
+        --mount 'type=volume,src='"${NFS_HOST_VOL_NAME}"\
+',volume-driver=local,dst='"${NFS_MNT_PATH}"',volume-opt=type=nfs,'\
+'volume-opt=device=:'"${NFS_HOST_VOL_PATH}"\
+',volume-opt=o=addr='"${NFS_HOST_ADDR}" \
         "${IMAGE_TAG}" mpi_bootstrap             \
                     mpi_master_service_name=${MPI_MASTER_SERVICE_NAME} \
                     mpi_worker_service_name=${MPI_WORKER_SERVICE_NAME} \
