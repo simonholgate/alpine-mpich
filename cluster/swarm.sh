@@ -166,6 +166,9 @@ up_master ()
         --network %s \\
         --publish %s:22 \\
         --user root \\
+        --mount 'type=volume,src=vol1,volume-driver=local,dst=/mnt/data/,\\
+volume-opt=type=nfs,volume-opt=device=:/vol1,\\
+volume-opt=o=addr=10.193.200.114' \\
         %s mpi_bootstrap \\
             mpi_master_service_name=%s \\
             mpi_worker_service_name=%s \\
@@ -174,13 +177,16 @@ up_master ()
     "${MPI_MASTER_SERVICE_NAME}" "${MPI_WORKER_SERVICE_NAME}"
 
     printf "\\n"
-
+# Mount NFS example from:
+# https://blog.dahanne.net/2017/11/20/docker-swarm-and-nfs-volumes/
+# docker service create --mount 'type=volume,src=test,volume-driver=local,dst=/data/,volume-opt=type=nfs,volume-opt=device=:/nfs/test,volume-opt=o=addr=nfs.my.corporate.network' --name test --entrypoint=ls volume:defined-with-copy /data/
     docker service create                      \
         --name ${MPI_MASTER_SERVICE_NAME}      \
         --replicas 1                           \
         --network ${NETWORK_NAME}              \
         --publish ${SSH_PORT}:22               \
         --user root                            \
+        --mount 'type=volume,src=vol1,volume-driver=local,dst=/mnt/data/,volume-opt=type=nfs,volume-opt=device=:/vol1,volume-opt=o=addr=10.193.200.114' \
         "${IMAGE_TAG}" mpi_bootstrap             \
                     mpi_master_service_name=${MPI_MASTER_SERVICE_NAME} \
                     mpi_worker_service_name=${MPI_WORKER_SERVICE_NAME} \
@@ -202,6 +208,7 @@ up_workers ()
         --replicas %s \\
         --network %s \\
         --user root \\
+        --mount 'type=volume,src=vol1,volume-driver=local,dst=/mnt/data/,\\
         %s mpi_bootstrap \\
             mpi_master_service_name=%s \\
             mpi_worker_service_name=%s \\
@@ -211,11 +218,15 @@ up_workers ()
 
     printf "\\n"
 
+# Mount NFS example from:
+# https://blog.dahanne.net/2017/11/20/docker-swarm-and-nfs-volumes/
+# docker service create --mount 'type=volume,src=test,volume-driver=local,dst=/data/,volume-opt=type=nfs,volume-opt=device=:/nfs/test,volume-opt=o=addr=nfs.my.corporate.network' --name test --entrypoint=ls volume:defined-with-copy /data/
     docker service create                      \
         --name ${MPI_WORKER_SERVICE_NAME}      \
         --replicas ${NUM_WORKER}               \
         --network ${NETWORK_NAME}              \
         --user root                            \
+        --mount 'type=volume,src=vol1,volume-driver=local,dst=/mnt/data/,volume-opt=type=nfs,volume-opt=device=:/vol1,volume-opt=o=addr=10.193.200.114' \
         "${IMAGE_TAG}" mpi_bootstrap             \
                     mpi_master_service_name=${MPI_MASTER_SERVICE_NAME} \
                     mpi_worker_service_name=${MPI_WORKER_SERVICE_NAME} \
