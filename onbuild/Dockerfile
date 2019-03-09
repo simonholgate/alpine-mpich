@@ -2,8 +2,8 @@ FROM nlknguyen/alpine-mpich:latest
 
 USER root
 
-# bind-tools gives us 'dig'
-RUN apk add --no-cache openssh bind-tools
+# bind-tools gives us 'dig'. nfs-utils allows mounting of nfs volume
+RUN apk add --no-cache openssh bind-tools nfs-utils
 
 # # ------------------------------------------------------------
 # # Utility shell scripts
@@ -58,6 +58,10 @@ RUN mkdir -p ${SSHDIR}
 # Default ssh config file that skips (yes/no) question when first login to the host
 RUN echo "StrictHostKeyChecking no" > ${SSHDIR}/config
 # This file can be overwritten by the following onbuild step if ssh/ directory has config file
+
+# Add a mount point for the NFS drive
+RUN mkdir -p /mnt/data
+RUN chmod go+rw /mnt/data
 
 # Switch back to default user
 USER ${USER}
