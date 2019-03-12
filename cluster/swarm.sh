@@ -36,6 +36,7 @@ NFS_HOST_ADDR="10.193.200.114"
 NFS_HOST_VOL_NAME="vol1"
 NFS_HOST_VOL_PATH="/vol1"
 NFS_MNT_PATH="/mnt/data"
+NFS_OPTS="vers=3,hard"
 
 # Include config variables if the file exists
 # shellcheck disable=SC1091
@@ -128,14 +129,12 @@ up_network ()
     printf "$ docker network create  \\
                 --driver overlay      \\
                 --subnet %s  \\
-                --opt encrypted       \\
                 %s\\n" "${NETWORK_SUBNET}" "${NETWORK_NAME}"
     printf "\\n"
 
     docker network create               \
             --driver overlay            \
             --subnet ${NETWORK_SUBNET}  \
-            --opt encrypted             \
             ${NETWORK_NAME}
 
     echo "=> network is created"
@@ -173,7 +172,8 @@ up_master ()
         --mount 'type=volume,src=%s,volume-driver=local,dst=%s,\\
 volume-opt=type=nfs,volume-opt=device=:%s,\\
 volume-opt=o=addr=%s' \\
-        %s mpi_bootstrap \\
+        --with-registry-auth \\
+        %s /usr/local/bin/mpi_bootstrap \\
             mpi_master_service_name=%s \\
             mpi_worker_service_name=%s \\
             role=master\\n" \
@@ -196,7 +196,8 @@ volume-opt=o=addr=%s' \\
 ',volume-driver=local,dst='"${NFS_MNT_PATH}"',volume-opt=type=nfs,'\
 'volume-opt=device=:'"${NFS_HOST_VOL_PATH}"\
 ',volume-opt=o=addr='"${NFS_HOST_ADDR}" \
-        "${IMAGE_TAG}" mpi_bootstrap             \
+        --with-registry-auth \
+        "${IMAGE_TAG}" /usr/local/bin/mpi_bootstrap             \
                     mpi_master_service_name=${MPI_MASTER_SERVICE_NAME} \
                     mpi_worker_service_name=${MPI_WORKER_SERVICE_NAME} \
                     role=master
@@ -220,7 +221,8 @@ up_workers ()
         --mount 'type=volume,src=%s,volume-driver=local,dst=%s,\\
 volume-opt=type=nfs,volume-opt=device=:%s,\\
 volume-opt=o=addr=%s' \\
-        %s mpi_bootstrap \\
+        --with-registry-auth \\
+        %s /usr/local/bin/mpi_bootstrap \\
             mpi_master_service_name=%s \\
             mpi_worker_service_name=%s \\
             role=master\\n" \
@@ -242,7 +244,8 @@ volume-opt=o=addr=%s' \\
 ',volume-driver=local,dst='"${NFS_MNT_PATH}"',volume-opt=type=nfs,'\
 'volume-opt=device=:'"${NFS_HOST_VOL_PATH}"\
 ',volume-opt=o=addr='"${NFS_HOST_ADDR}" \
-        "${IMAGE_TAG}" mpi_bootstrap             \
+        --with-registry-auth \
+        "${IMAGE_TAG}" /usr/local/bin/mpi_bootstrap             \
                     mpi_master_service_name=${MPI_MASTER_SERVICE_NAME} \
                     mpi_worker_service_name=${MPI_WORKER_SERVICE_NAME} \
                     role=worker

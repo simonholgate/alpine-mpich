@@ -9,7 +9,7 @@ services:
   master:
     image: $REGISTRY_ADDR:$REGISTRY_PORT/$IMAGE_NAME
     volumes:
-      - "nfsmountCC:/mnt/data/"    # nfsmountCC is the volume created by docker-compose in the volumes section below.  /opt/ is the mount location inside of the container.
+      - "nfsmountCC:/SRC"    # nfsmountCC is the volume created by docker-compose in the volumes section below.  /opt/ is the mount location inside of the container.
     user: root
     entrypoint: ["mpi_bootstrap", "role=master", "mpi_master_service_name=master", "mpi_worker_service_name=worker"]
     ports:
@@ -20,7 +20,7 @@ services:
   worker:
     image: $REGISTRY_ADDR:$REGISTRY_PORT/$IMAGE_NAME
     volumes:
-      - "nfsmountCC:/mnt/data/"    # nfsmountCC is the volume created by docker-compose in the volumes section below.  /opt/ is the mount location inside of the container.
+      - "nfsmountCC:/SRC/"    # nfsmountCC is the volume created by docker-compose in the volumes section below.  /opt/ is the mount location inside of the container.
     user: root
     entrypoint: ["mpi_bootstrap", "role=worker", "mpi_master_service_name=master", "mpi_worker_service_name=worker"]
     networks:
@@ -35,4 +35,4 @@ volumes:
     driver_opts:
       type: nfs
       o: addr=10.193.200.114       # IP of nfs server.  This is also where you put any options '-o' in standard option format
-      device: ":/vol1/"  # location on nfs server of file/dir you want to mount
+      device: ":/vol1/crisc"  # location on nfs server of file/dir you want to mount

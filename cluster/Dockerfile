@@ -1,4 +1,4 @@
-FROM nlknguyen/alpine-mpich:onbuild
+FROM eu.gcr.io/bobeas-hpc/nemo_nowcast:onbuild
 
 # # ------------------------------------------------------------
 # # Build MPI project
@@ -11,10 +11,10 @@ FROM nlknguyen/alpine-mpich:onbuild
 
 # Copy the content of `project` directory in the host machine to 
 # the current working directory in this Docker image
-COPY project/ .
+#COPY project/ .
 
 # Normal build command
-RUN mpicc -o mpi_hello_world mpi_hello_world.c
+#RUN mpicc -o mpi_hello_world mpi_hello_world.c
 
 # ####################
 # For Docker beginner:
