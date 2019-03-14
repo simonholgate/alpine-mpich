@@ -7,7 +7,7 @@ COPY --from=base /usr/local /usr/local
 USER root
 
 # bind-tools gives us 'dig'. nfs-utils allows mounting of nfs volume
-RUN apt update && apt install -y dnsutils nfs-common sudo --no-install-recommends && apt-get clean
+RUN apt update && apt install -y ssh dnsutils nfs-common sudo --no-install-recommends && apt-get clean
 
 # # ------------------------------------------------------------
 # # Utility shell scripts
