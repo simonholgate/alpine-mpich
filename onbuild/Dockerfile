@@ -1,9 +1,13 @@
-FROM eu.gcr.io/bobeas-hpc/nemo_nowcast:v17
+FROM eu.gcr.io/bobeas-hpc/nemo/xios:v1 as base
+
+FROM debian:jessie as onbuild
+
+COPY --from=base /usr/local /usr/local
 
 USER root
 
 # bind-tools gives us 'dig'. nfs-utils allows mounting of nfs volume
-RUN apt update && apt install -y dnsutils nfs-common sudo  && apt-get clean
+RUN apt update && apt install -y dnsutils nfs-common sudo --no-install-recommends && apt-get clean
 
 # # ------------------------------------------------------------
 # # Utility shell scripts
@@ -30,6 +34,7 @@ RUN mkdir -p /etc/opt
 RUN echo "export HYDRA_HOST_FILE=${HYDRA_HOST_FILE}" >> /etc/profile
 
 RUN touch ${HYDRA_HOST_FILE}
+RUN chown ${USER}:${USER} ${HYDRA_HOST_FILE}
 
 #### ADD DEFAULT USER ####
 ARG USER=mpi

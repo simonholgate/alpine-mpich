@@ -36,7 +36,6 @@ NFS_HOST_ADDR="10.193.200.114"
 NFS_HOST_VOL_NAME="vol1"
 NFS_HOST_VOL_PATH="/vol1"
 NFS_MNT_PATH="/mnt/data"
-NFS_OPTS="vers=3,hard"
 
 # Include config variables if the file exists
 # shellcheck disable=SC1091
