@@ -1,4 +1,4 @@
-FROM eu.gcr.io/bobeas-hpc/nemo_nowcast:onbuild
+FROM eu.gcr.io/bobeas-hpc/nemo_crisc:onbuild
 
 # # ------------------------------------------------------------
 # # Build MPI project
