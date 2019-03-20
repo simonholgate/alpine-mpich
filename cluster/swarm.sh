@@ -170,7 +170,7 @@ up_master ()
         --user root \\
         --mount 'type=volume,src=%s,volume-driver=local,dst=%s,\\
 volume-opt=type=nfs,volume-opt=device=:%s,\\
-volume-opt=o=addr=%s' \\
+volume-opt=o=addr=%s,nolock,soft,rw' \\
         --with-registry-auth \\
         %s /usr/local/bin/mpi_bootstrap \\
             mpi_master_service_name=%s \\
@@ -194,7 +194,7 @@ volume-opt=o=addr=%s' \\
         --mount 'type=volume,src='"${NFS_HOST_VOL_NAME}"\
 ',volume-driver=local,dst='"${NFS_MNT_PATH}"',volume-opt=type=nfs,'\
 'volume-opt=device=:'"${NFS_HOST_VOL_PATH}"\
-',volume-opt=o=addr='"${NFS_HOST_ADDR}" \
+',"volume-opt=o=addr='"${NFS_HOST_ADDR}"',nolock,soft,rw"'\
         --with-registry-auth \
         "${IMAGE_TAG}" /usr/local/bin/mpi_bootstrap             \
                     mpi_master_service_name=${MPI_MASTER_SERVICE_NAME} \
@@ -219,7 +219,7 @@ up_workers ()
         --user root \\
         --mount 'type=volume,src=%s,volume-driver=local,dst=%s,\\
 volume-opt=type=nfs,volume-opt=device=:%s,\\
-volume-opt=o=addr=%s' \\
+volume-opt=o=addr=%s,nolock,soft,rw' \\
         --with-registry-auth \\
         %s /usr/local/bin/mpi_bootstrap \\
             mpi_master_service_name=%s \\
@@ -242,7 +242,7 @@ volume-opt=o=addr=%s' \\
         --mount 'type=volume,src='"${NFS_HOST_VOL_NAME}"\
 ',volume-driver=local,dst='"${NFS_MNT_PATH}"',volume-opt=type=nfs,'\
 'volume-opt=device=:'"${NFS_HOST_VOL_PATH}"\
-',volume-opt=o=addr='"${NFS_HOST_ADDR}" \
+',"volume-opt=o=addr='"${NFS_HOST_ADDR}"',nolock,soft,rw"'\
         --with-registry-auth \
         "${IMAGE_TAG}" /usr/local/bin/mpi_bootstrap             \
                     mpi_master_service_name=${MPI_MASTER_SERVICE_NAME} \

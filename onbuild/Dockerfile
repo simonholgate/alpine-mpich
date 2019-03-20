@@ -1,6 +1,6 @@
 FROM eu.gcr.io/bobeas-hpc/nemo/xios:v1 as base
 
-FROM debian:jessie as onbuild
+FROM eu.gcr.io/bobeas-hpc/debian:jessie as onbuild
 
 COPY --from=base /usr/local /usr/local
 
